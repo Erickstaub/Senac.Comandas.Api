@@ -9,4 +9,10 @@
         public List<ComandaItem> Itens { get; set; } = new List<ComandaItem>();
 
     }
+    public enum SituaçãoComanda
+    {
+        Aberta = 0,
+        Fechada = 1,
+        Cancelada = 2
+    }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ComandasApi.DTOs;
+using ComandasApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,6 +10,14 @@ namespace ComandasApi.Controllers
     [ApiController]
     public class MesaController : ControllerBase
     {
+        public List<Mesa> mesas = new List<Mesa>()
+        {
+            new Mesa {
+                Id = 1, SituaçãoMesa = (int)SituacaoMesa.Livre , NumeroMesa = 1
+            },
+            new Mesa {
+                Id = 2, SituaçãoMesa = (int)SituacaoMesa.Ocupada, NumeroMesa = 2
+            } };
         // GET: api/<MesaController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -17,20 +27,26 @@ namespace ComandasApi.Controllers
 
         // GET api/<MesaController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult Get(int id)
         {
-            return "value";
+           var mesa = mesas.FirstOrDefault(m => m.Id == id);
+            if (mesa is null)
+            {
+                return Results.NotFound();
+            }
+            return Results.Ok(mesa);
         }
 
         // POST api/<MesaController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] MesaCreatRequest mesapost)
         {
+
         }
 
         // PUT api/<MesaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] MesaUpdateRequest mesaput)
         {
         }
 
