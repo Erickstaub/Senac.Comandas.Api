@@ -39,15 +39,42 @@ namespace ComandasApi.Controllers
 
         // POST api/<MesaController>
         [HttpPost]
-        public void Post([FromBody] MesaCreatRequest mesapost)
+        public IResult Post([FromBody] MesaCreatRequest mesapost)
         {
-
+            if (mesapost.NumeroMesa <= 0)
+            {
+                return Results.BadRequest("O número da mesa deve ser maior que zero.");
+            }
+            var mesanova = new Mesa
+            {
+                Id = mesas.Count + 1,
+                SituaçãoMesa = mesapost.SituaçãoMesa,
+                NumeroMesa = mesapost.NumeroMesa
+            };
+            mesas.Add(mesanova);
+            return Results.Created($"/api/mesa/{mesanova.Id}", mesanova);
         }
 
         // PUT api/<MesaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] MesaUpdateRequest mesaput)
+        public IResult Put(int id, [FromBody] MesaUpdateRequest mesaput)
         {
+            var mesa = mesas.FirstOrDefault(m => m.Id == id);
+            if(mesaput.NumeroMesa <= 0 || mesaput.SituaçãoMesa <=0)
+            {
+                return Results.BadRequest("O número deve ser maior que zero.");
+            }
+            if (mesaput.SituaçãoMesa > 2)
+            {
+                return Results.BadRequest("Situação inválida. Use 0 para Livre e 1 para Ocupada e 2 para reservada.");
+            }
+            if (mesa is null)
+            {
+              return   Results.NotFound($"Mesa {id} nao encontrada");
+            }
+            mesa.SituaçãoMesa = mesaput.SituaçãoMesa;
+            mesa.NumeroMesa = mesaput.NumeroMesa;
+             return Results.NoContent();
         }
 
         // DELETE api/<MesaController>/5
