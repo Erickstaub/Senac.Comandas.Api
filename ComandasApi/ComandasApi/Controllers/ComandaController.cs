@@ -16,7 +16,15 @@ namespace ComandasApi.Controllers
                 Id = 1, SituaçãoComanda = (int)SituaçãoComanda.Aberta , MesaId = 1, ClienteNome = "João"
             },
             new Comanda {
-                Id = 2, SituaçãoComanda = (int)SituaçãoComanda.Fechada, MesaId = 2, ClienteNome = "Maria"
+                Id = 2, SituaçãoComanda = (int)SituaçãoComanda.Fechada, MesaId = 2, ClienteNome = "Maria",Itens = new List<ComandaItem> {
+                    new ComandaItem {
+                        Id = 1, CardapioItemId = 1, ComandaId = 2
+                    },
+                    new ComandaItem {
+                        Id = 2, CardapioItemId = 2, ComandaId = 1
+                    }
+                }
+
             } };
         // GET: api/<ComandaController>
         [HttpGet]
@@ -52,17 +60,37 @@ namespace ComandasApi.Controllers
                 Id = comandas.Count + 1,
                 ClienteNome = comandacreate.nomeCliente,
                 MesaId = comandacreate.numeroMesa,
-        
-
             };
+            var comandaItens = new List<ComandaItem>();
+            foreach (int cardaItens in comandacreate.CardapioItensId)
+            {
+                var comandaItem = new ComandaItem
+                {
+                    Id = comandaItens.Count + 1,
+                    CardapioItemId = cardaItens,
+                    ComandaId = novaComanda.Id
+                };
+                comandaItens.Add(comandaItem);
+            }
+            novaComanda.Itens = comandaItens;
             comandas.Add(novaComanda);
             return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
         }
 
         // PUT api/<ComandaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] ComandaUpdateRequest comanda)
+        public IResult Put(int id, [FromBody] ComandaUpdateRequest comanda)
         {
+            var comandaAtual = comandas.FirstOrDefault(c => c.Id == id);
+            if (comandaAtual is null)
+            {
+                return Results.NotFound();
+            }
+           
+            comandaAtual.ClienteNome = comanda.nomeCliente;
+            comandaAtual.SituaçãoComanda = comanda.numeroMesa;
+            return Results.NoContent();
+
         }
 
         // DELETE api/<ComandaController>/5
