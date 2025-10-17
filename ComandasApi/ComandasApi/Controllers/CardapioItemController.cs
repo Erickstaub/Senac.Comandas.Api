@@ -10,7 +10,7 @@ namespace ComandasApi.Controllers
     [ApiController]
     public class CardapioItemController : ControllerBase
     {
-        public List<CardapioItem> cardapios = new List<CardapioItem>()
+        static List<CardapioItem> cardapios = new List<CardapioItem>()
         {
             new CardapioItem {
                 Id = 1, Descricao= "Deliciosa coxinha de frango com catupiry", Preco = 5.50M, PossuiPreparo = true, Titulo = "Coxinha"
@@ -98,8 +98,21 @@ namespace ComandasApi.Controllers
 
         // DELETE api/<CardapioItemController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            var cardapioItem = cardapios
+                .FirstOrDefault(c => c.Id == id);
+            if (cardapioItem is null)
+            {
+                return Results.NotFound($"caardapio {id} nao encontrado");
+            }
+            var remove = cardapios.Remove(cardapioItem);
+            if(remove)
+            {
+
+            return Results.NoContent();
+            }
+            return Results.StatusCode(500);
         }
     }
 }
