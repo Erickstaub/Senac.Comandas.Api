@@ -1,6 +1,7 @@
 ﻿using ComandasApi.DTOs;
 using ComandasApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,28 +11,30 @@ namespace ComandasApi.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        static List<Usuario> usuarios = new List<Usuario>()
+
+        //variave que representa o banco de dados 
+        public ComandaDBContext _context { get; set; }
+        // construtor
+        public UsuarioController(ComandaDBContext context)
         {
-            new Usuario {
-                Id = 1, Nome= "Admin", Senha = "admin123", Email = "a@a.com"
-            },
-            new Usuario
-            {
-                Id = 2,Nome="jose",Senha = "123", Email = "jose@gmail.com"
-            }
-        };
+            _context = context;
+        } 
+        
+        
         // GET: api/<UsuarioController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+            //conectar no banco de dados e trazer a consulta select * from usuarios
+            var usuarios = _context.Usuarios.ToList();
+            return Results.Ok(usuarios);
         }
 
         // GET api/<UsuarioController>/5
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if (usuario is null)
             {
                 return Results.NotFound();
@@ -58,13 +61,16 @@ namespace ComandasApi.Controllers
 
             var usuario = new Usuario
             {
-                Id = usuarios.Count + 1,
+             
                 Nome = usuariopost.Nome,
                 Email = usuariopost.Email,
                 Senha = usuariopost.Senha
             };
-            usuarios.Add(usuario);
-            
+            // adiciona o usuario no contexto do db
+            _context.Usuarios.Add(usuario);
+            // executa o insert no banco de dados
+            _context.SaveChanges();
+
             return  Results.Created($"/api/usuario/{usuario.Id}", usuario);
         }
 
@@ -72,7 +78,7 @@ namespace ComandasApi.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioput)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if (usuario is null)
             {
                return  Results.NotFound($"Usario do id {id} nao encontrado.");
@@ -80,6 +86,7 @@ namespace ComandasApi.Controllers
             usuario.Nome = usuarioput.Nome;
             usuario.Email = usuarioput.Email;
             usuario.Senha = usuarioput.Senha;
+            _context.SaveChanges();
             return Results.NoContent();
         }
 
@@ -87,13 +94,15 @@ namespace ComandasApi.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if (usuario is null)
             {
                 return Results.NotFound($"usuario {id} nao encontrado");
             }
-            var remove = usuarios.Remove(usuario);
-            if (remove)
+             _context.Usuarios.Remove(usuario);
+            
+            var removido = _context.SaveChanges();
+            if(removido > 0)
             {
                 return Results.NoContent();
             }

@@ -10,26 +10,25 @@ namespace ComandasApi.Controllers
     [ApiController]
     public class PedidoCozinhaController : ControllerBase
     {
-        List<PedidoCozinha> pedidos = new List<PedidoCozinha>()
+        public ComandaDBContext _context { get; set; }
+        public PedidoCozinhaController(ComandaDBContext context)
         {
-            new PedidoCozinha {
-                Id = 1, SituaçãoPedido = (int)SituaçãoPedido.Pendente , ComandaItemId= 1, 
-            },
-            new PedidoCozinha {
-                Id = 2, SituaçãoPedido = (int)SituaçãoPedido.Pronto, ComandaItemId = 2
-            } };
+            _context = context;
+        }
+
         // GET: api/<PedidoCozinhaController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+            var pedidos = _context.PedidosCozinha.ToList();
+            return Results.Ok(pedidos);
         }
 
         // GET api/<PedidoCozinhaController>/5
         [HttpGet("{id}")]
         public IResult get(int id)
         {
-            var pedido = pedidos.FirstOrDefault(p => p.Id == id);
+            var pedido = _context.PedidosCozinha.FirstOrDefault(p => p.Id == id);
             if (pedido is null)
             {
                 return Results.NotFound();
@@ -52,11 +51,12 @@ namespace ComandasApi.Controllers
 
             var pedidonovo = new PedidoCozinha
             {
-                Id = pedidos.Count + 1,
+               
                 SituaçãoPedido = pedido.SituaçãoPedido,
                 ComandaItemId = pedido.ComandaItemId
             };
-            pedidos.Add(pedidonovo);
+            _context.PedidosCozinha.Add(pedidonovo);
+            _context.SaveChanges();
             return Results.Created($"/api/pedidocozinha/{pedidonovo.Id}", pedidonovo);
         }
 
@@ -64,13 +64,14 @@ namespace ComandasApi.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] PedidoCozinhaUpdateRequest pedido)
         {
-            var pedidoupdate = pedidos.FirstOrDefault(p => p.Id == id);
+            var pedidoupdate = _context.PedidosCozinha.FirstOrDefault(p => p.Id == id);
             if (pedidoupdate is null)
             {
                 return Results.NotFound();
             }
             pedidoupdate.SituaçãoPedido = pedido.SituaçãoPedido;
             pedido.ComandaItemId = pedido.ComandaItemId;
+            _context.SaveChanges();
             return Results.Ok(pedidoupdate);
 
         }
@@ -79,13 +80,14 @@ namespace ComandasApi.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var pedido = pedidos.FirstOrDefault(p => p.Id == id);
+            var pedido = _context.PedidosCozinha.FirstOrDefault(p => p.Id == id);
             if (pedido is null)
             {
                 return Results.NotFound($"pedido {id} nao encontrado");
             }
-               var remove =  pedidos.Remove(pedido);
-            if (remove)
+               _context.PedidosCozinha.Remove(pedido);
+            var remove = _context.SaveChanges();
+            if (remove > 0)
                 return Results.NoContent();
             return Results.StatusCode(500);
         }

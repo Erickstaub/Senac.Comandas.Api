@@ -10,26 +10,24 @@ namespace ComandasApi.Controllers
     [ApiController]
     public class MesaController : ControllerBase
     {
-        public List<Mesa> mesas = new List<Mesa>()
+        public ComandaDBContext _context { get; set; }
+       public MesaController(ComandaDBContext context)
         {
-            new Mesa {
-                Id = 1, SituaçãoMesa = (int)SituacaoMesa.Livre , NumeroMesa = 1
-            },
-            new Mesa {
-                Id = 2, SituaçãoMesa = (int)SituacaoMesa.Ocupada, NumeroMesa = 2
-            } };
+            _context = context;
+        }
         // GET: api/<MesaController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+            var mesas = _context.Mesas.ToList();
+            return Results.Ok(mesas);
         }
 
         // GET api/<MesaController>/5
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-           var mesa = mesas.FirstOrDefault(m => m.Id == id);
+           var mesa = _context.Mesas.FirstOrDefault(m => m.Id == id);
             if (mesa is null)
             {
                 return Results.NotFound();
@@ -47,11 +45,12 @@ namespace ComandasApi.Controllers
             }
             var mesanova = new Mesa
             {
-                Id = mesas.Count + 1,
+           
                 SituaçãoMesa = mesapost.SituaçãoMesa,
                 NumeroMesa = mesapost.NumeroMesa
             };
-            mesas.Add(mesanova);
+            _context.Mesas.Add(mesanova);
+            _context.SaveChanges();
             return Results.Created($"/api/mesa/{mesanova.Id}", mesanova);
         }
 
@@ -59,7 +58,7 @@ namespace ComandasApi.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] MesaUpdateRequest mesaput)
         {
-            var mesa = mesas.FirstOrDefault(m => m.Id == id);
+            var mesa = _context.Mesas.FirstOrDefault(m => m.Id == id);
             if(mesaput.NumeroMesa <= 0 || mesaput.SituaçãoMesa <=0)
             {
                 return Results.BadRequest("O número deve ser maior que zero.");
@@ -74,6 +73,7 @@ namespace ComandasApi.Controllers
             }
             mesa.SituaçãoMesa = mesaput.SituaçãoMesa;
             mesa.NumeroMesa = mesaput.NumeroMesa;
+            _context.SaveChanges();
              return Results.NoContent();
         }
 
@@ -81,13 +81,14 @@ namespace ComandasApi.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var mesa = mesas.FirstOrDefault(m => m.Id == id);
+            var mesa = _context.Mesas.FirstOrDefault(m => m.Id == id);
             if (mesa is null)
             {
                 return Results.NotFound($"mesa {id} nao encontrada");
             }
-            var remove = mesas.Remove(mesa);
-            if(remove)
+           _context.Mesas.Remove(mesa);
+            var remove = _context.SaveChanges();
+            if (remove > 0)
             {
                 return Results.NoContent();
             }
