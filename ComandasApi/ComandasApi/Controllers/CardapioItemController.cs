@@ -8,9 +8,13 @@ namespace ComandasApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class CardapioItemController : ControllerBase
     {
-       public ComandaDBContext _contex { get; set; }
+        // get contex
+        public ComandaDBContext _contex { get; set; }
+        //construtor
+
         public CardapioItemController(ComandaDBContext contex)
         {
             _contex = contex;
@@ -20,6 +24,7 @@ namespace ComandasApi.Controllers
         [HttpGet]
         public IResult Get()
         {
+            // listar todos os cardapio itens
             var cardapioitem = _contex.CardapioItens.ToList();
             return Results.Ok(cardapioitem);
         }
@@ -27,6 +32,7 @@ namespace ComandasApi.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
+            // listar cardapio item por id  
             var cardapio = _contex.CardapioItens.FirstOrDefault(c => c.Id == id);
             if (cardapio is null)
             {
@@ -39,7 +45,8 @@ namespace ComandasApi.Controllers
         [HttpPost]
         public IResult Post([FromBody] CardapioItemCreateRequest cardapio)
         {
-            if(cardapio.Titulo.Length < 3)
+            // validações
+            if (cardapio.Titulo.Length < 3)
             {
                 return Results.BadRequest("O título deve ter pelo menos 3 caracteres.");
             }
@@ -51,6 +58,7 @@ namespace ComandasApi.Controllers
             {
                 return Results.BadRequest("O preço deve ser maior que zero.");
             }
+            // criar novo item do cardapio
             var newCardapio = new CardapioItem
             {
             
@@ -68,11 +76,13 @@ namespace ComandasApi.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] CardapioItemUpdateRequest cardapioPust)
         {
+            // atualizar item do cardapio
             var cardapio = _contex.CardapioItens.FirstOrDefault(c => c.Id == id);
             if (cardapio is null)
             {
                 return Results.NotFound();
             }
+            // validações
             cardapio.Titulo = cardapioPust.Titulo;
             cardapio.Descricao = cardapioPust.Descricao;
             cardapio.Preco = cardapioPust.Preco;
@@ -85,6 +95,7 @@ namespace ComandasApi.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
+            // deletar item do cardapio
             var cardapioItem = _contex.CardapioItens
                 .FirstOrDefault(c => c.Id == id);
             if (cardapioItem is null)
