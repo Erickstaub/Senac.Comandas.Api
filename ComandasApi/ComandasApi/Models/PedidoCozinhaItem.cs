@@ -1,11 +1,18 @@
-﻿namespace ComandasApi.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace ComandasApi.Models
 {
     public class PedidoCozinhaItem
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int PedidoCozinhaId { get; set; }
-        public int ComandaId { get; set; }
-        public List<PedidoCozinhaItem> Itens { get; set; } = [];
+        public virtual PedidoCozinha PedidoCozinha { get; set; }
+        public int ComandaItemId { get; set; }
+        public virtual ComandaItem ComandaItem { get; set; }
+
 
 
     }
