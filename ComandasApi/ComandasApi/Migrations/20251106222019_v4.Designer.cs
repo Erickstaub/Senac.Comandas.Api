@@ -2,6 +2,7 @@
 using ComandasApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComandasApi.Migrations
 {
     [DbContext(typeof(ComandaDBContext))]
-    partial class ComandaDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251106222019_v4")]
+    partial class v4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.21");
@@ -48,22 +51,6 @@ namespace ComandasApi.Migrations
                             PossuiPreparo = true,
                             Preco = 19.90m,
                             Titulo = "X bacon"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Descricao = "Refrigerante geladinho",
-                            PossuiPreparo = false,
-                            Preco = 6.00m,
-                            Titulo = "Coca cola 300ml"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Descricao = "Batata frita crocante",
-                            PossuiPreparo = true,
-                            Preco = 12.00m,
-                            Titulo = "Batata frita"
                         });
                 });
 
@@ -94,20 +81,6 @@ namespace ComandasApi.Migrations
                             ClienteNome = "Cliente Exemplo",
                             MesaId = 1,
                             SituaçãoComanda = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ClienteNome = "Outro Cliente",
-                            MesaId = 2,
-                            SituaçãoComanda = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ClienteNome = "Terceiro Cliente",
-                            MesaId = 3,
-                            SituaçãoComanda = 0
                         });
                 });
 
@@ -151,18 +124,6 @@ namespace ComandasApi.Migrations
                         {
                             Id = 1,
                             NumeroMesa = 1,
-                            SituaçãoMesa = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            NumeroMesa = 2,
-                            SituaçãoMesa = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            NumeroMesa = 3,
                             SituaçãoMesa = 0
                         });
                 });

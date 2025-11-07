@@ -65,7 +65,7 @@ namespace ComandasApi.Controllers
 
                 // criar o pedido de cozinha e o item de acordo com o cadastro do cardapio possuipreparo
                 var cardapioitem = _context.CardapioItens.FirstOrDefault(c => c.Id == cardaItens);
-                if (cardapioitem!.PossuiPreparo)
+                if (cardapioitem!.PossuiPreparo == true)
                 {
                     var pedido = new PedidoCozinha
                     {
@@ -80,12 +80,25 @@ namespace ComandasApi.Controllers
                     _context.PedidosCozinha.Add(pedido);
                     _context.PedidosCozinhaItens.Add(pedidoItem);
                 }
-
             }
             novaComanda.Itens = comandaItens;
           _context.Comandas.Add(novaComanda);
             _context.SaveChanges();
-            return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
+            var response = new ComandaCreateResponse
+            {
+                Id = novaComanda.Id,
+                NomeCliente = novaComanda.ClienteNome,
+                NumeroMesa = novaComanda.MesaId,
+                Itens = novaComanda.Itens.Select(i => new ComandaItemResponse
+                {
+                    Id = i.Id,
+                    Titulo = _context.CardapioItens.
+                    First(c => c.Id == i.CardapioItemId).Titulo
+                }).ToList()
+
+            };
+
+            return Results.Created($"/api/comanda/{novaComanda.Id}", response);
         }
 
         // PUT api/<ComandaController>/5

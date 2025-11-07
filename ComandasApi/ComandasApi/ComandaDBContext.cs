@@ -25,7 +25,20 @@ namespace ComandasApi
                     Id = 1,
                     NumeroMesa = 1,
                     SituaçãoMesa = (int)Models.SituacaoMesa.Livre
+                },
+                new Models.Mesa
+                {
+                    Id = 2,
+                    NumeroMesa = 2,
+                    SituaçãoMesa = (int)Models.SituacaoMesa.Ocupada
+                },
+                new Models.Mesa
+                {
+                    Id = 3,
+                    NumeroMesa = 3,
+                    SituaçãoMesa = (int)Models.SituacaoMesa.Livre
                 }
+
             );
             modelBuilder.Entity<Models.Comanda>().HasData(
                 new Models.Comanda
@@ -34,6 +47,20 @@ namespace ComandasApi
                     MesaId = 1,
                     ClienteNome = "Cliente Exemplo",
                     SituaçãoComanda = 1
+                },
+                new Models.Comanda
+                {
+                    Id = 2,
+                    MesaId = 2,
+                    ClienteNome = "Outro Cliente",
+                    SituaçãoComanda = 0
+                },
+                new Models.Comanda
+                {
+                    Id = 3,
+                    MesaId = 3,
+                    ClienteNome = "Terceiro Cliente",
+                    SituaçãoComanda = 0
                 }
                 );
             modelBuilder.Entity<Models.CardapioItem>().HasData(
@@ -44,8 +71,24 @@ namespace ComandasApi
                     Descricao = "que x tudo que x bacon...",
                     Preco = 19.90m,
                     PossuiPreparo = true,
+                },
+                new Models.CardapioItem
+                {
+                    Id = 2,
+                    Titulo = "Coca cola 300ml",
+                    Descricao = "Refrigerante geladinho",
+                    Preco = 6.00m,
+                    PossuiPreparo = false,
+                },
+                new Models.CardapioItem
+                {
+                    Id = 3,
+                    Titulo = "Batata frita",
+                    Descricao = "Batata frita crocante",
+                    Preco = 12.00m,
+                    PossuiPreparo = true,
                 }
-                )
+                );
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<Models.Usuario> Usuarios { get; set; } = default!;
