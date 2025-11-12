@@ -113,9 +113,47 @@ namespace ComandasApi.Controllers
            
             comandaAtual.ClienteNome = comanda.nomeCliente;
             comandaAtual.SituaçãoComanda = comanda.numeroMesa;
+
+            //itens
+            foreach(var item in comanda.Itens)
+            {
+                //se id for informado e remover for verdadeiro
+                if(item.Id >0 && item.Remove == true)
+                {
+
+                    //remover item
+                    RemoverItemComanda(item.Id);
+                }
+                // se cardapioid foi informando
+                if(item.CardapioItensId > 0)
+                {
+                    //adicionar item
+                    InserirItemComanda(comandaAtual, item.CardapioItensId);
+                }
+            }
+
             _context.SaveChanges();
             return Results.NoContent();
 
+        }
+
+        private void InserirItemComanda(Comanda comanda, int cardapioItensId)
+        {
+            _context.ComandaItens.Add(new ComandaItem
+            {
+                CardapioItemId = cardapioItensId,
+                Comanda = comanda
+            });
+        }
+
+        private void RemoverItemComanda(int id)
+        {
+            //consulta o item
+          var comandaItem = _context.ComandaItens.FirstOrDefault(ci => ci.Id == id);
+            if (comandaItem is not null)
+            {
+                _context.ComandaItens.Remove(comandaItem);
+            }
         }
 
         // DELETE api/<ComandaController>/5
