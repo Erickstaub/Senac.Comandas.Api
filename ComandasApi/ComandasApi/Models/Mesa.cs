@@ -14,7 +14,8 @@ namespace ComandasApi.Models
     public enum SituacaoMesa
     {
         Livre = 0,
-        Ocupada = 1
+        Ocupada = 1,
+        Reservada = 2
 
     }
 }

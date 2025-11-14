@@ -30,7 +30,7 @@ namespace ComandasApi
                 {
                     Id = 2,
                     NumeroMesa = 2,
-                    SituaçãoMesa = (int)Models.SituacaoMesa.Ocupada
+                    SituaçãoMesa = (int)Models.SituacaoMesa.Livre
                 },
                 new Models.Mesa
                 {
