@@ -8,6 +8,6 @@ namespace ComandasApi.Models
         public int Id { get; set; }
         public string Nome { get; set; } = default!;
         public string? Descrição { get; set; } = default!;
-        public ICollection<CardapioItem>? Itens { get; set; }
+       
     }
 }

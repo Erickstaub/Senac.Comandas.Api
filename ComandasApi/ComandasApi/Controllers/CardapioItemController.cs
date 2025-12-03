@@ -1,6 +1,7 @@
 ﻿using ComandasApi.DTOs;
 using ComandasApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,7 +26,7 @@ namespace ComandasApi.Controllers
         public IResult Get()
         {
             // listar todos os cardapio itens
-            var cardapioitem = _contex.CardapioItens.ToList();
+            var cardapioitem = _contex.CardapioItens.Include(c => c.CategoriaCardapio).ToList();
             return Results.Ok(cardapioitem);
         }
         // GET api/<CardapioItemController>/5
@@ -33,7 +34,11 @@ namespace ComandasApi.Controllers
         public IResult Get(int id)
         {
             // listar cardapio item por id  
-            var cardapio = _contex.CardapioItens.FirstOrDefault(c => c.Id == id);
+            var cardapio = _contex
+                .CardapioItens
+                .Include(ci => ci.CategoriaCardapio)
+                .FirstOrDefault(c => c.Id == id);
+            // select * from CardapioItens inner join categoriacardapio in cc.id = c.categoriacardapioid where Id = 1
             if (cardapio is null)
             {
                 return Results.NotFound();
@@ -59,6 +64,16 @@ namespace ComandasApi.Controllers
                 return Results.BadRequest("O preço deve ser maior que zero.");
             }
             // criar novo item do cardapio
+            //validacao da categoria se for preenchida
+            if (cardapio.CategoriaCardapioId.HasValue)
+            {
+                var categoria = _contex.CategoriaCardapio
+                    .FirstOrDefault(c => c.Id == cardapio.CategoriaCardapioId.Value);
+                if (categoria is null)
+                {
+                    return Results.BadRequest("Categoria de cardápio inválida.");
+                }
+            }
             var newCardapio = new CardapioItem
             {
             
@@ -84,10 +99,20 @@ namespace ComandasApi.Controllers
                 return Results.NotFound();
             }
             // validações
+            if (cardapio.CategoriaCardapioId.HasValue)
+            {
+                var categoria = _contex.CategoriaCardapio.FirstOrDefault(c => c.Id == cardapio.CategoriaCardapioId);
+                //se retorno e nulo
+                if (categoria is null)
+                {
+                    return Results.BadRequest("Categoria de cardápio inválida.");
+                }
+            }
             cardapio.Titulo = cardapioPust.Titulo;
             cardapio.Descricao = cardapioPust.Descricao;
             cardapio.Preco = cardapioPust.Preco;
             cardapio.PossuiPreparo = cardapioPust.PossuiPreparo;
+            cardapio.CategoriaCardapioId = cardapio.CategoriaCardapioId;
             _contex.SaveChanges();
             return Results.NoContent();
         }

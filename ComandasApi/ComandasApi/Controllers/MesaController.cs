@@ -59,7 +59,7 @@ namespace ComandasApi.Controllers
         public IResult Put(int id, [FromBody] MesaUpdateRequest mesaput)
         {
             var mesa = _context.Mesas.FirstOrDefault(m => m.Id == id);
-            if(mesaput.NumeroMesa <= 0 || mesaput.SituaçãoMesa <=0)
+            if(mesaput.NumeroMesa <= 0)
             {
                 return Results.BadRequest("O número deve ser maior que zero.");
             }

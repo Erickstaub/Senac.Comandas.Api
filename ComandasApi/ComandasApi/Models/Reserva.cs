@@ -11,5 +11,6 @@ namespace ComandasApi.Models
         public string NomeCliente { get; set; } = default!;
         public int NumeroMesa { get; set; }
         public string Telefone { get; set; }
+        public DateTime _dataHoraReserva { get; set; } = DateTime.Now;
     }
 }

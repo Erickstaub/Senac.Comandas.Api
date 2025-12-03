@@ -18,9 +18,9 @@ namespace ComandasApi.Controllers
         public UsuarioController(ComandaDBContext context)
         {
             _context = context;
-        } 
-        
-        
+        }
+
+
         // GET: api/<UsuarioController>
         [HttpGet]
         public IResult Get()
@@ -46,22 +46,22 @@ namespace ComandasApi.Controllers
         [HttpPost]
         public IResult Post([FromBody] UsuarioCreatRequest usuariopost)
         {
-            if(usuariopost.Senha.Length < 6)
-            {
-                return Results.BadRequest("A senha deve ter pelo menos 6 caracteres.");
-            }
-            if(usuariopost.Nome.Length < 3)
-            {
-                return Results.BadRequest("O nome deve ter pelo menos 3 caracteres.");
-            }
-            if(usuariopost.Email.Length < 6 || !usuariopost.Email.Contains("@"))
-            {
-                return Results.BadRequest("O email deve ter pelo menos 6 caracteres e conter '@'.");
-            }
+            //if (usuariopost.Senha.Length < 6)
+            //{
+            //    return Results.BadRequest("A senha deve ter pelo menos 6 caracteres.");
+            //}
+            //if (usuariopost.Nome.Length < 3)
+            //{
+            //    return Results.BadRequest("O nome deve ter pelo menos 3 caracteres.");
+            //}
+            //if (usuariopost.Email.Length < 6 || !usuariopost.Email.Contains("@"))
+            //{
+            //    return Results.BadRequest("O email deve ter pelo menos 6 caracteres e conter '@'.");
+            //}
 
             var usuario = new Usuario
             {
-             
+
                 Nome = usuariopost.Nome,
                 Email = usuariopost.Email,
                 Senha = usuariopost.Senha
@@ -71,7 +71,7 @@ namespace ComandasApi.Controllers
             // executa o insert no banco de dados
             _context.SaveChanges();
 
-            return  Results.Created($"/api/usuario/{usuario.Id}", usuario);
+            return Results.Created($"/api/usuario/{usuario.Id}", usuario);
         }
 
         // PUT api/<UsuarioController>/5
@@ -81,7 +81,7 @@ namespace ComandasApi.Controllers
             var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if (usuario is null)
             {
-               return  Results.NotFound($"Usario do id {id} nao encontrado.");
+                return Results.NotFound($"Usario do id {id} nao encontrado.");
             }
             usuario.Nome = usuarioput.Nome;
             usuario.Email = usuarioput.Email;
@@ -99,14 +99,26 @@ namespace ComandasApi.Controllers
             {
                 return Results.NotFound($"usuario {id} nao encontrado");
             }
-             _context.Usuarios.Remove(usuario);
-            
+            _context.Usuarios.Remove(usuario);
+
             var removido = _context.SaveChanges();
-            if(removido > 0)
+            if (removido > 0)
             {
                 return Results.NoContent();
             }
             return Results.StatusCode(500);
         }
+        [HttpPost("Login")]
+        public IResult Login([FromBody] LoginRequest login)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == login.Email && u.Senha == login.Senha);
+            if (usuario is null)
+            {
+                return Results.Unauthorized();
+            }
+            return Results.Ok(login);
+
+        }
+     
     }
 }
