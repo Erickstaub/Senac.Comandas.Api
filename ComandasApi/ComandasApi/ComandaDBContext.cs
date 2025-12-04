@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ComandasApi.Models;
 
 namespace ComandasApi
 {
@@ -117,5 +118,6 @@ namespace ComandasApi
         public DbSet<Models.PedidoCozinhaItem> PedidosCozinhaItens { get; set; } = default!;
         public DbSet<Models.CardapioItem> CardapioItens { get; set; } = default!;
         public DbSet<Models.CategoriaCardapio> CategoriaCardapio { get; set; } = default!;
+        public DbSet<Models.Funcionario> Funcionario { get; set; } = default!;
     }
 }
