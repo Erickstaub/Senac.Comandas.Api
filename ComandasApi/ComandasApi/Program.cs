@@ -23,9 +23,17 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configura o middleware CORS
+//criar o banco de dados
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ComandaDBContext>();
+    //await db.Database.EnsureCreatedAsync();
+    await db.Database.MigrateAsync();
+
+}
 
 
-app.UseCors("MinhaPolitica");
+    app.UseCors("MinhaPolitica");
 
 
 
